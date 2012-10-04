@@ -1,4 +1,4 @@
-# -*- ruby -*-
+```ruby
 require 'payex'
 
 # This is how a basic PayEx transaction works:
@@ -32,3 +32,4 @@ begin
 rescue PayEx::Error => error
   # [transaction unsucessful]
 end
+```
