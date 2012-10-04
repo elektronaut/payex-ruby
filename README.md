@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/gointeractive/payex-ruby.png)](https://travis-ci.org/gointeractive/payex-ruby)
+
 ```ruby
 require 'payex'
 
