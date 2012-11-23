@@ -44,17 +44,24 @@ describe PayEx::CreditCardRedirect do
         'clientLanguage' => ''
       }
 
-      expected['hash'] = PayEx::API.signed_hash(expected.values.join)
+      expected_values = %w{
+        accountNumber purchaseOperation price priceArgList currency
+        vat orderID productNumber description clientIPAddress clientIdentifier
+        additionalValues externalID returnUrl view agreementRef cancelUrl
+        clientLanguage
+      }.map{|key| expected[key]}
+
+      expected['hash'] = PayEx::API.signed_hash(expected_values.join)
       savon.expects('Initialize7').with(expected).returns(:initialize_ok)
 
       href = PayEx::CreditCardRedirect.initialize_transaction! \
-        order_id: SAMPLE_ORDER_ID,
-        product_number: SAMPLE_PRODUCT_NUMBER,
-        product_description: SAMPLE_PRODUCT_DESCRIPTION,
-        price: SAMPLE_PRICE_CENTS,
-        customer_ip: SAMPLE_IP_ADDRESS,
-        return_url: SAMPLE_RETURN_URL,
-        cancel_url: SAMPLE_CANCEL_URL
+        :order_id => SAMPLE_ORDER_ID,
+        :product_number => SAMPLE_PRODUCT_NUMBER,
+        :product_description => SAMPLE_PRODUCT_DESCRIPTION,
+        :price => SAMPLE_PRICE_CENTS,
+        :customer_ip => SAMPLE_IP_ADDRESS,
+        :return_url => SAMPLE_RETURN_URL,
+        :cancel_url => SAMPLE_CANCEL_URL
 
       href.should include 'http'
     end

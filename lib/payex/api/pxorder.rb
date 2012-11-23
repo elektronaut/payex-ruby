@@ -8,87 +8,92 @@ module PayEx::PxOrder
   def Initialize7(params)
     PayEx::API.invoke! wsdl, 'Initialize7', params, {
       'accountNumber' => {
-        signed: true,
-        default: proc { PayEx.account_number! }
+        :signed => true,
+        :default => proc { PayEx.account_number! }
       },
       'purchaseOperation' => {
-        signed: true
+        :signed => true
       },
       'price' => {
-        signed: true,
-        format: Integer
+        :signed => true,
+        :format => Integer
       },
       'priceArgList' => {
-        signed: true,
-        default: ''
+        :signed => true,
+        :default => ''
       },
       'currency' => {
-        signed: true,
-        default: proc { PayEx.default_currency! }
+        :signed => true,
+        :default => proc { PayEx.default_currency! }
       },
       'vat' => {
-        signed: true,
-        format: Integer,
-        default: 0
+        :signed => true,
+        :format => Integer,
+        :default => 0
       },
       'orderID' => {
-        signed: true,
-        format: /^[a-z0-9]{,50}$/i
+        :signed => true,
+        :format => /^[a-z0-9]{1,50}$/i
       },
       'productNumber' => {
-        signed: true,
-        format: /^[A-Z0-9]{,50}$/
+        :signed => true,
+        :format => /^[A-Z0-9]{1,50}$/
       },
       'description' => {
-        signed: true,
-        format: /^.{,160}$/
+        :signed => true,
+        :format => /^.{1,160}$/
       },
       'clientIPAddress' => {
-        signed: true
+        :signed => true
       },
       'clientIdentifier' => {
-        signed: true,
-        default: ''
+        :signed => true,
+        :default => ''
       },
       'additionalValues' => {
-        signed: true,
-        default: ''
+        :signed => true,
+        :default => ''
       },
       'externalID' => {
-        signed: true,
-        default: ''
+        :signed => true,
+        :default => ''
       },
       'returnUrl' => {
-        signed: true
+        :signed => true
       },
       'view' => {
-        signed: true,
-        default: 'CREDITCARD'
+        :signed => true,
+        :default => 'CREDITCARD'
       },
       'agreementRef' => {
-        signed: true,
-        default: ''
+        :signed => true,
+        :default => ''
       },
       'cancelUrl' => {
-        signed: true,
-        default: ''
+        :signed => true,
+        :default => ''
       },
       'clientLanguage' => {
-        signed: true,
-        default: ''
+        :signed => true,
+        :default => ''
       }
+    }, %w{
+      accountNumber purchaseOperation price priceArgList currency
+      vat orderID productNumber description clientIPAddress clientIdentifier
+      additionalValues externalID returnUrl view agreementRef cancelUrl
+      clientLanguage
     }
   end
 
   def Complete(params)
     PayEx::API.invoke! wsdl, 'Complete', params, {
       'accountNumber' => {
-        signed: true,
-        default: proc { PayEx.account_number! }
+        :signed => true,
+        :default => proc { PayEx.account_number! }
       },
       'orderRef' => {
-        signed: true
+        :signed => true
       }
-    }
+    }, %w{accountNumber orderRef}
   end
 end

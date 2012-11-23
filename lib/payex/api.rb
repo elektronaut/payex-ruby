@@ -6,18 +6,18 @@ module PayEx::API
 
   class ParamError < StandardError; end
 
-  def invoke! wsdl, name, params, specs
-    body = get_request_body(params, specs)
+  def invoke! wsdl, name, params, specs, signed_params
+    body = get_request_body(params, specs, signed_params)
     response = invoke_raw! wsdl, name, body
 
     # Unwrap e.g. <Initialize8Response>
-    response = response[response.keys.first]
+    response = response[response.keys.sort{|a, b| a.to_s <=> b.to_s}.reject{|k| k == :@xmlns}.first]
     # Unwrap e.g. <Initialize8Result>
-    response = response[response.keys.first]
+    response = response[response.keys.sort{|a, b| a.to_s <=> b.to_s}.reject{|k| k == :@xmlns}.first]
     # Parse embedded XML document
     response = Nori.parse(response)
     # Unwrap <payex>
-    response = response[response.keys.first]
+    response = response[:payex]
 
     if ok = response[:status][:code] == 'OK' rescue false
       response
@@ -29,7 +29,7 @@ module PayEx::API
   end
 
   def invoke_raw! wsdl, name, body
-    Savon.client(wsdl).request(name, body: body) {
+    Savon.client(wsdl).request(name, :body => body) {
       http.headers.delete('SOAPAction')
     }.body
   end
@@ -38,25 +38,24 @@ module PayEx::API
     Digest::MD5.hexdigest(string + PayEx.encryption_key!)
   end
 
-  def get_request_body(params, specs)
+  def get_request_body(params, specs, signed_params)
     parse_params(params, specs).tap do |params|
-      params['hash'] = sign_params(params, specs)
+      params['hash'] = sign_params(params, specs, signed_params)
     end
   end
 
-  def sign_params(params, specs)
-    signed_hash(hashed_params(params, specs).join)
+  def sign_params(params, specs, signed_params)
+    signed_hash(hashed_params(params, specs, signed_params).join)
   end
 
-  def hashed_params(params, specs)
-    specs.select { |key, options| options[:signed] }.
-      keys.map { |key| params[key] }
+  def hashed_params(params, specs, signed_params)
+    signed_params.map { |key| params[key] }
   end
 
   def parse_params(params, specs)
     stringify_keys(params).tap do |result|
       _parse_params! result, specs
-      result.select! { |k, v| v != nil }
+      result.reject! { |k, v| v == nil }
     end
   end
 
