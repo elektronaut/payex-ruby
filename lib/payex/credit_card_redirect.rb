@@ -8,9 +8,11 @@ module PayEx::CreditCardRedirect
       :productNumber => params[:product_number],
       :description => params[:product_description],
       :price => params[:price],
+      :currency => params[:currency],
       :clientIPAddress => params[:customer_ip],
       :returnUrl => params[:return_url],
-      :cancelUrl => params[:cancel_url]
+      :cancelUrl => params[:cancel_url],
+      :clientLanguage => params[:client_language]
 
     response[:redirect_url]
   end
