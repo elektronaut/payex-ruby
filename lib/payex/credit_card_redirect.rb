@@ -4,7 +4,7 @@ module PayEx::CreditCardRedirect
   def initialize_transaction! params
     response = PayEx::PxOrder.Initialize7 \
       :orderID => params[:order_id],
-      :purchaseOperation => 'AUTHORIZATION',
+      :purchaseOperation => (params[:purchase_operation] || 'AUTHORIZATION'),
       :productNumber => params[:product_number],
       :description => params[:product_description],
       :price => params[:price],
